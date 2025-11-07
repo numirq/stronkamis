@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hug bear</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fff4ab;
+        }
+        .kontener-mis {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            max-width: 300px;
+            max-height: 300px;
+            cursor: pointer;
+        }
+        .mis {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .mis:hover {
+            transform: scale(1.02);
+        }
+        .tytul {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            color: #ff6b9d;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 2;
+            animation: pojawienie 2s ease-in-out;
+        }
+        .serduszko {
+            position: fixed;
+            font-size: 20px;
+            z-index: 1;
+            animation: unoszenie 6s ease-in-out infinite;
+            opacity: 0;
+        }
+        @keyframes unoszenie {
+            0% {
+                transform: translateY(100vh) translateX(-50%);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(50%);
+                opacity: 0;
+            }
+        }
+        @keyframes pojawienie {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="tytul"></h1>
+    <div class="kontener-mis">
+        <img src="mis1.jpg" alt="Miś" class="mis" id="mis">
+    </div>
+
+    <script>
+        // Obsługa misia
+        const misImg = document.getElementById('mis');
+        let isChanging = false;
+        
+        // Funkcja tworząca serduszka
+        function tworzSerduszko() {
+            const serduszko = document.createElement('div');
+            serduszko.className = 'serduszko';
+            serduszko.innerHTML = '🌹';
+            serduszko.style.left = Math.random() * 100 + '%';
+            serduszko.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            document.body.appendChild(serduszko);
+            
+            // Usuń serduszko po zakończeniu animacji
+            setTimeout(() => {
+                serduszko.remove();
+            }, 6000);
+        }
+
+        // Twórz serduszka co jakiś czas
+        setInterval(tworzSerduszko, 500);
+
+        misImg.addEventListener('click', function() {
+            if (isChanging) return; // zabezpieczenie przed wielokrotnym klikaniem
+            isChanging = true;
+            
+            // Zmiana na mis2.jpg
+            this.src = 'mis2.jpg';
+            
+            // Po sekundzie powrót do mis1.jpg
+            setTimeout(() => {
+                this.src = 'mis1.jpg';
+                isChanging = false;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
