@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hug bear</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Rubik+Spray+Paint&display=swap');
         
         body, html {
             margin: 0;
@@ -36,16 +36,16 @@
         .mis:hover {
             transform: scale(1.02);
         }
-        .tytul {
+        .licznik {
             position: fixed;
-            top: 20px;
+            top: 100px;
             left: 0;
             width: 100%;
             text-align: center;
-            font-family: 'Dancing Script', cursive;
-            font-size: 3em;
+            font-family: 'Rubik Spray Paint', cursive;
+            font-size: 2em;
             color: #ff6b9d;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             z-index: 2;
             animation: pojawienie 2s ease-in-out;
         }
@@ -82,18 +82,33 @@
                 transform: translateY(0);
             }
         }
+        .licznik {
+            position: fixed;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Rubik Spray Paint', cursive;
+            font-size: 2em;
+            color: #000000;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
 
     <h1 class="tytul"></h1>
+    <div class="licznik">H u g s : <span id="licznikPrzytulasow">0</span></div>
     <div class="kontener-mis">
         <img src="mis1.jpg" alt="Miś" class="mis" id="mis">
     </div>
 
     <script>
-        // Obsługa misia
+        // Obsługa misia i licznika
         const misImg = document.getElementById('mis');
+        const licznikElement = document.getElementById('licznikPrzytulasow');
+        let licznikWartość = 0;
         let isChanging = false;
         
         // Funkcja tworząca serduszka
@@ -117,6 +132,10 @@
         misImg.addEventListener('click', function() {
             if (isChanging) return; // zabezpieczenie przed wielokrotnym klikaniem
             isChanging = true;
+            
+            // Zwiększ licznik przytulasów
+            licznikWartość++;
+            licznikElement.textContent = licznikWartość;
             
             // Zmiana na mis2.jpg
             this.src = 'mis2.jpg';
