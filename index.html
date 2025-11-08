@@ -6,7 +6,6 @@
     <title>Hug bear</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Rubik+Spray+Paint&display=swap');
-        
         body, html {
             margin: 0;
             padding: 0;
@@ -33,9 +32,7 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
             transition: transform 0.2s;
         }
-        .mis:hover {
-            transform: scale(1.02);
-        }
+        .mis:hover { transform: scale(1.02); }
         .licznik {
             position: fixed;
             top: 100px;
@@ -57,30 +54,14 @@
             opacity: 0;
         }
         @keyframes unoszenie {
-            0% {
-                transform: translateY(100vh) translateX(-50%);
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.8;
-            }
-            80% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-100px) translateX(50%);
-                opacity: 0;
-            }
+            0% { transform: translateY(100vh) translateX(-50%); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) translateX(50%); opacity: 0; }
         }
         @keyframes pojawienie {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
         .licznik {
             position: fixed;
@@ -94,6 +75,55 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             z-index: 2;
         }
+        .dolna-liczba {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 999;
+            font-family: 'Rubik Spray Paint', cursive;
+            background: rgba(255,255,255,0.85);
+            color: #000000;
+            padding: 8px 12px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            display: inline-block;
+            text-align: center;
+            font-size: clamp(1rem, 4vw, 2.2rem);
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .reset-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            font-family: 'Rubik Spray Paint', cursive;
+            background: rgba(255,255,255,0.95);
+            color: #000000;
+            padding: 6px 10px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            display: inline-block;
+            text-align: center;
+            font-size: clamp(0.9rem, 3.5vw, 1.4rem);
+            line-height: 1;
+            border: none;
+            cursor: pointer;
+        }
+
+        .reset-btn:active { transform: translateY(1px); }
+        @media (max-width: 480px) {
+            .dolna-liczba {
+                right: 12px;
+                bottom: 12px;
+                padding: 6px 10px;
+                font-size: clamp(0.9rem, 5.5vw, 1.6rem);
+                border-radius: 8px;
+            }
+            .licznik { top: 80px; font-size: 1.6rem; }
+            .kontener-mis { max-width: 180px; max-height: 180px; }
+        }
     </style>
 </head>
 <body>
@@ -103,15 +133,46 @@
     <div class="kontener-mis">
         <img src="mis1.jpg" alt="Miś" class="mis" id="mis">
     </div>
+    <button id="resetBtn" class="reset-btn" aria-label="Resetuj przytulasy">Reset</button>
+    <div class="dolna-liczba" aria-hidden="true">61</div>
 
     <script>
-        // Obsługa misia i licznika
         const misImg = document.getElementById('mis');
         const licznikElement = document.getElementById('licznikPrzytulasow');
+        const resetBtn = document.getElementById('resetBtn');
         let licznikWartość = 0;
         let isChanging = false;
-        
-        // Funkcja tworząca serduszka
+
+        // Cookie helpers
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const d = new Date();
+                d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+                expires = "; expires=" + d.toUTCString();
+            }
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        // Initialize counter from cookie
+        (function initCounterFromCookie() {
+            const saved = getCookie('hugs');
+            licznikWartość = saved ? (parseInt(saved, 10) || 0) : 0;
+            licznikElement.textContent = licznikWartość;
+        })();
+
+        // Function tworząca serduszka
         function tworzSerduszko() {
             const serduszko = document.createElement('div');
             serduszko.className = 'serduszko';
@@ -119,32 +180,33 @@
             serduszko.style.left = Math.random() * 100 + '%';
             serduszko.style.animationDuration = (Math.random() * 3 + 3) + 's';
             document.body.appendChild(serduszko);
-            
-            // Usuń serduszko po zakończeniu animacji
-            setTimeout(() => {
-                serduszko.remove();
-            }, 6000);
+            setTimeout(() => { serduszko.remove(); }, 6000);
         }
 
-        // Twórz serduszka co jakiś czas
-        setInterval(tworzSerduszko, 500);
+        const serduszkaInterval = setInterval(tworzSerduszko, 500);
 
-        misImg.addEventListener('click', function() {
-            if (isChanging) return; // zabezpieczenie przed wielokrotnym klikaniem
+        // Click on the bear: increase counter, save to cookie, change image briefly
+        misImg.addEventListener('click', function () {
+            if (isChanging) return;
             isChanging = true;
-            
-            // Zwiększ licznik przytulasów
             licznikWartość++;
             licznikElement.textContent = licznikWartość;
-            
-            // Zmiana na mis2.jpg
+            setCookie('hugs', licznikWartość, 365);
             this.src = 'mis2.jpg';
-            
-            // Po sekundzie powrót do mis1.jpg
             setTimeout(() => {
                 this.src = 'mis1.jpg';
                 isChanging = false;
             }, 1000);
+        });
+
+        // Reset button: clear counter and cookie
+        resetBtn.addEventListener('click', function () {
+            licznikWartość = 0;
+            licznikElement.textContent = licznikWartość;
+            setCookie('hugs', 0, 365);
+            // krótka animacja feedback
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => { this.style.transform = ''; }, 120);
         });
     </script>
 </body>
